@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Lists{% endblock %}</h1>
+  {% if g.user %}
+    <a class="action" href="{{ url_for('todo.create') }}">New</a>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  {% if g.user %}
+    {% for task in tasks %}
+      <article class="task">        
+        {% if g.user['id'] == task['author_id'] %}
+        <header></header>
+          <h1>{{ task['title'] }}</h1>
+          <div>      
+            <a class="action" href="{{ url_for('todo.update', id=task['id']) }}">Edit</a>
+          </div>
+        {% endif %}
+        {# <p class="body">{{ post['body'] }}</p> #}
+      </article>
+      {% if not loop.last %}
+        <hr>
+      {% endif %}
+    {% endfor %}
+  {% else %}
+  {# ユーザー非ログイン時は登録・ログイン画面表示 #}
+    <li><a href="{{ url_for('auth.register') }}">Register</a>
+    <li><a href="{{ url_for('auth.login') }}">Log In</a>
+  {% endif %}
+{% endblock %}

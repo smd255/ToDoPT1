@@ -13,6 +13,8 @@ from .auth import login_required
 
 bp = Blueprint("todo", __name__)
 
+INDEX_CHECKBOX = "checkbox"   #index.htmlチェックボックスのname
+
 #メイン画面
 @bp.route("/")
 def index():
@@ -26,21 +28,28 @@ def index():
     return render_template("todo/index.html", tasks = tasks)
 
 #メイン画面 状況更新ボタン
-@bp.route("/submit_form", methods= ("POST",))
-def submit_form():
-    #チェックボックスの中身を周回で取得
-    checkbox_values = {}
-    for key in request.form:
-        if request.form.get(key):
-            checkbox_values[key] = 'checked'
-        else:
-            checkbox_values[key] = 'unchecked'
-    
-    # フラッシュメッセージとしてチェックボックスの状態を表示
-    for name, value in checkbox_values.items():
-        flash(f'{name} is {value}')
-    
-    return render_template('todo/index.html', checkbox_count=len(checkbox_values))
+@bp.route("/<int:id>/submit_form", methods= ("POST",))
+def submit_form(id):
+    #タスク状況更新
+    db = get_db()
+    if request.form.get(INDEX_CHECKBOX) != None:
+        is_done = True
+    else:
+        is_done = False
+
+    db.execute(
+            "UPDATE task SET is_done = ? WHERE id = ?", (is_done, id)
+        )
+    db.commit()   
+
+    #更新後情報取得
+    tasks = db.execute(
+        "SELECT t.id, title, is_done, author_id, username"
+        " FROM task t JOIN user u ON t.author_id = u.id"
+        " ORDER BY t.id DESC"
+    ).fetchall()
+
+    return render_template('todo/index.html', tasks = tasks)
 
 
 

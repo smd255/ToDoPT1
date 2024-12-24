@@ -25,6 +25,25 @@ def index():
     
     return render_template("todo/index.html", tasks = tasks)
 
+#メイン画面 状況更新ボタン
+@bp.route("/submit_form", methods= ("POST",))
+def submit_form():
+    #チェックボックスの中身を周回で取得
+    checkbox_values = {}
+    for key in request.form:
+        if request.form.get(key):
+            checkbox_values[key] = 'checked'
+        else:
+            checkbox_values[key] = 'unchecked'
+    
+    # フラッシュメッセージとしてチェックボックスの状態を表示
+    for name, value in checkbox_values.items():
+        flash(f'{name} is {value}')
+    
+    return render_template('todo/index.html', checkbox_count=len(checkbox_values))
+
+
+
 #タスク作成画面
 @bp.route("/create", methods= ("GET", "POST"))
 @login_required

@@ -132,3 +132,11 @@ input[type=submit] {
   align-self: start;
   min-width: 10em;
 }
+
+/* 追加。水平に並べる */
+.checkbox {
+  display: flex;
+}
+
+
+

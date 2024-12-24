@@ -11,20 +11,17 @@
   {% if g.user %}
     {% for task in tasks %}
       <article class="task">        
-        {% if g.user['id'] == task['author_id'] %}
-        <header></header>
-          <h1>
-            <input type="checkbox" id="{{ task['id'] }}" name="{{ task['id'] }}">
-            <label for="{{ task['id'] }}">{{ task['title'] }}</label>            
-          </h1>
-          <div>
-            {# TODO: value はdbから取得する。 #}
-            <form method="POST" action="{{ url_for('todo.submit_form') }}">
-              <input type="hidden" id="{{ task['id'] }}" name="{{ task['id'] }}" >
-              <button type="submit">状況更新</button>  
-            </form>    
+        {% if g.user['id'] == task['author_id'] %}          
+            <form method="POST" action="{{ url_for('todo.submit_form', id=task['id']) }}">
+              <div class="checkbox">
+                <input type="checkbox" id="{{ task['id'] }}" name="checkbox" value="1"
+                  {% if task.is_done %}checked{% endif %}>
+                <label for="{{ task['id'] }}">{{ task['title'] }}</label>
+              </div>
+              <input type="submit" value="状況更新">     
+            </form>             
             <a class="action" href="{{ url_for('todo.update', id=task['id']) }}">編集</a>
-          </div>
+
         {% endif %}
         {# <p class="body">{{ post['body'] }}</p> #}
       </article>

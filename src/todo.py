@@ -86,7 +86,6 @@ def update(id):
     task = _get_task(id)    #task取得
     if request.method == "POST":
         title = request.form["title"]
-        #TODO:タスク状況更新
         error = None
 
         #タイトル空欄時の処理
@@ -96,7 +95,6 @@ def update(id):
         if error is not None:
             flash(error)
         else:
-            #TODO:タスク状況の更新
             db = get_db()
             db.execute(
                 "UPDATE task SET title = ? WHERE id = ?", (title, id)
@@ -109,7 +107,7 @@ def update(id):
 
 #タスクの消去
 @bp.route("/<int:id>/delete", methods=("POST",))
-#TODO:未ログイン時のログイン要求
+@login_required
 def delete(id):
     _get_task(id)   #戻り値の使用ではなく、エラーチェック用。関数分けるのもあり。
     db = get_db()

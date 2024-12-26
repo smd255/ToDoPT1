@@ -7,6 +7,7 @@ from src import create_app
 from src.db import get_db
 from src.db import init_db
 
+
 #SQL読み出し、テスト実装
 with open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb") as f:
     _data_sql = f.read().decode("utf8")

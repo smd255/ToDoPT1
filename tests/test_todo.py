@@ -8,12 +8,9 @@ def test_index(client, auth):
     assert b"Log In" in response.data
     assert b"Register" in response.data
 
-    #TODO:パラメータ見直し
     auth.login()
     response = client.get("/")
     assert b"test title" in response.data
-    assert b"by test on 2018-01-01" in response.data
-    assert b"test\nbody" in response.data
     assert b'href="/1/update"' in response.data
 
 
@@ -33,7 +30,6 @@ def test_author_required(app, client, auth):
         db.commit()
 
     auth.login()
-    #TODO:つくりこみ段階で現ユーザー以外に見えないようになっている？
     #現在のユーザーでは表示されない
     assert client.post("/1/update").status_code == 403
     assert client.post("/1/delete").status_code == 403
@@ -52,8 +48,7 @@ def test_exists_required(client, auth, path):
 def test_create(client, auth, app):
     auth.login()
     assert client.get("/create").status_code == 200
-    #TODO:テーブル内容変更
-    client.post("/create", data={"title": "created", "body": ""})
+    client.post("/create", data={"title": "created"})
 
     with app.app_context():
         db = get_db()
@@ -77,8 +72,7 @@ def test_update(client, auth, app):
 @pytest.mark.parametrize("path", ("/create", "/1/update"))
 def test_create_update_validate(client, auth, path):
     auth.login()
-    #TODO:テーブル変更
-    response = client.post(path, data={"title": "", "body": ""})
+    response = client.post(path, data={"title": ""})
     assert b"Title is required." in response.data
 
 
@@ -90,6 +84,5 @@ def test_delete(client, auth, app):
 
     with app.app_context():
         db = get_db()
-        #TODO:テーブル変更
         post = db.execute("SELECT * FROM post WHERE id = 1").fetchone()
         assert post is None

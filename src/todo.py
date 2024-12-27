@@ -57,8 +57,9 @@ def submit_form(id):
         " ORDER BY t.id DESC"
     ).fetchall()
 
-    return render_template('todo/index.html', tasks = tasks)
-
+    return render_template("todo/index.html", tasks = tasks, 
+                           register_text = TEXT_TODO_INDEX_REGSTER, 
+                           login_text = TEXT_TODO_INDEX_LOGIN)
 
 
 #タスク作成画面

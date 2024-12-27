@@ -5,7 +5,8 @@ from src.db import get_db
 from src.todo import (
     TEXT_TODO_INDEX_REGSTER,
     TEXT_TODO_INDEX_LOGIN,
-    MESSAGE_TODO_UPDATE_TITLE_BLANK_CHK
+    MESSAGE_TODO_UPDATE_TITLE_BLANK_CHK,
+    INDEX_CHECKBOX
 )
 
 def test_index(client, auth):
@@ -91,3 +92,51 @@ def test_delete(client, auth, app):
         db = get_db()
         task = db.execute("SELECT * FROM task WHERE id = 1").fetchone()
         assert task is None
+
+
+#チェックボックステスト
+@pytest.mark.parametrize("chk", ("on", None))
+def test_submit_form(client, auth, app, chk):
+
+    auth.login()
+    # assert client.get("/1/submit_form").status_code == 200
+    client.post("/1/submit_form", data={INDEX_CHECKBOX: chk})
+
+    with app.app_context():
+        db = get_db()
+        task = db.execute("SELECT * FROM task WHERE id = 1").fetchone()
+        if chk == 'on':
+            assert task['is_done'] == True
+        else:
+            assert task['is_done'] == False
+
+ 
+# def test_submit_form(client, monkeypatch):
+#     # モックデータを設定
+#     class MockDB:
+#         def execute(self, query, params):
+#             pass
+#         def commit(self):
+#             pass
+#         def fetchall(self):
+#             return [
+#                 {'id': 1, 'title': 'Task 1', 'is_done': False, 'author_id': 1, 'username': 'user1'},
+#                 {'id': 2, 'title': 'Task 2', 'is_done': True, 'author_id': 2, 'username': 'user2'}
+#             ]
+
+#     def mock_get_db():
+#         return MockDB()
+
+#     monkeypatch.setattr('src.db.get_db', mock_get_db)
+
+#     # テストデータを送信
+#     response = client.post('/1/submit_form', data={INDEX_CHECKBOX: 'on'})
+#     assert response.status_code == 200
+#     assert 'Task 1' in response.data.decode('utf-8')
+#     assert 'Task 2' in response.data.decode('utf-8')
+
+
+
+
+    
+

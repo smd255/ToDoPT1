@@ -14,6 +14,14 @@ from werkzeug.security import generate_password_hash
 
 from .db import get_db
 
+MESSAGE_AUTH_USERNAME_BLANK_CHK = "ユーザー名の入力が必要です"   #ユーザー名の空白チェック
+MESSAGE_AUTH_PASSWORD_BLANK_CHK = "パスワードの入力が必要です"    #パスワードの入力チェック
+
+MESSAGE_AUTH_USERNAME_VALID_CHK = "ユーザー名が正しくありません"    #ユーザー名の正誤チェック
+MESSAGE_AUTH_PASSWORD_VALID_CHK = "パスワードが正しくありません"    #パスワードの正誤チェック
+
+MESSAGE_AUTH_USERNAME_REG_CHK = "既に登録されています"  #ユーザー名登録チェック
+
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 #未ログイン時にログイン要求
@@ -21,7 +29,7 @@ def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
-            return redirect(url_for("auth_login"))
+            return redirect(url_for("auth.login"))
         
         return view(**kwargs)
     
@@ -53,9 +61,9 @@ def register():
 
         #空白チェック
         if not username:
-            error = "ユーザー名の入力が必要です"
+            error = MESSAGE_AUTH_USERNAME_BLANK_CHK
         elif not password:
-            error = "パスワードの入力が必要です"
+            error = MESSAGE_AUTH_PASSWORD_BLANK_CHK
 
         #DBに入力を保存
         if error is None:
@@ -66,7 +74,7 @@ def register():
                 )
                 db.commit()
             except db.IntegrityError:
-                error = f"ユーザー名： {username} は既に登録されています。"
+                error = f"ユーザー名： {username} は{MESSAGE_AUTH_USERNAME_REG_CHK}"
             else:
                 return redirect(url_for("auth.login"))
 
@@ -91,9 +99,9 @@ def login():
 
         #空白・パスワードエラーチェック
         if user is None:
-            error = "ユーザー名が正しくありません"
+            error = MESSAGE_AUTH_USERNAME_VALID_CHK
         elif not check_password_hash(user["password"], password):
-            error = "パスワードが正しくありません"
+            error = MESSAGE_AUTH_PASSWORD_VALID_CHK
 
         #ユーザー id 取得
         if error is None:

@@ -15,6 +15,12 @@ bp = Blueprint("todo", __name__)
 
 INDEX_CHECKBOX = "checkbox"   #index.htmlチェックボックスのname
 
+TEXT_TODO_INDEX_REGSTER = "ユーザー登録"
+TEXT_TODO_INDEX_LOGIN = "ログイン"
+
+MESSAGE_TODO_CREATE_TITLE_BLANK_CHK = "タイトルの入力が必要です"
+MESSAGE_TODO_UPDATE_TITLE_BLANK_CHK = "タイトルの入力が必要です"
+
 #メイン画面
 @bp.route("/")
 def index():
@@ -25,7 +31,9 @@ def index():
         " ORDER BY t.id DESC"
     ).fetchall()
     
-    return render_template("todo/index.html", tasks = tasks)
+    return render_template("todo/index.html", tasks = tasks, 
+                           register_text = TEXT_TODO_INDEX_REGSTER, 
+                           login_text = TEXT_TODO_INDEX_LOGIN)
 
 #メイン画面 状況更新ボタン
 @bp.route("/<int:id>/submit_form", methods= ("POST",))
@@ -63,7 +71,7 @@ def create():
 
         #タイトル空欄時の処理
         if not title:
-            error = "タイトルの入力が必要です"
+            error = MESSAGE_TODO_CREATE_TITLE_BLANK_CHK
 
         if error is not None:
             flash(error)
@@ -90,7 +98,7 @@ def update(id):
 
         #タイトル空欄時の処理
         if not title:
-            error = "タイトルの入力が必要です"
+            error = MESSAGE_TODO_UPDATE_TITLE_BLANK_CHK
 
         if error is not None:
             flash(error)

@@ -31,7 +31,7 @@
     {% endfor %}
   {% else %}
   {# ユーザー非ログイン時は登録・ログイン画面表示 #}
-    <li><a href="{{ url_for('auth.register') }}">ユーザー登録</a>
-    <li><a href="{{ url_for('auth.login') }}">ログイン</a>
+    <li><a href="{{ url_for('auth.register') }}">{{ register_text }}</a>
+    <li><a href="{{ url_for('auth.login') }}">{{ login_text }}</a>
   {% endif %}
 {% endblock %}

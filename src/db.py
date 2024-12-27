@@ -4,6 +4,8 @@ import click
 from flask import current_app
 from flask import g
 
+MESSAGE_DB_INIT = "データベース初期化完了"
+
 """
 設定済みDBへの接続
 リクエスト毎に固有
@@ -34,7 +36,7 @@ def init_db():
 @click.command("init-db")
 def init_db_command():
     init_db()
-    click.echo("データベース初期化完了")
+    click.echo(MESSAGE_DB_INIT)
 
 #sqliteとpython のデータタイム型変換
 #現状データタイム使ってないので一旦コメントアウト

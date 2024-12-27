@@ -2,11 +2,16 @@ import pytest
 
 from src.db import get_db
 
+from src.todo import (
+    TEXT_TODO_INDEX_REGSTER,
+    TEXT_TODO_INDEX_LOGIN,
+    MESSAGE_TODO_UPDATE_TITLE_BLANK_CHK
+)
 
 def test_index(client, auth):
     response = client.get("/")
-    assert b"Log In" in response.data
-    assert b"Register" in response.data
+    assert TEXT_TODO_INDEX_LOGIN.encode('utf-8') in response.data
+    assert TEXT_TODO_INDEX_REGSTER.encode('utf-8')  in response.data
 
     auth.login()
     response = client.get("/")
@@ -26,7 +31,7 @@ def test_author_required(app, client, auth):
     #ユーザー変更
     with app.app_context():
         db = get_db()
-        db.execute("UPDATE post SET author_id = 2 WHERE id = 1")
+        db.execute("UPDATE task SET author_id = 2 WHERE id = 1")
         db.commit()
 
     auth.login()
@@ -52,7 +57,7 @@ def test_create(client, auth, app):
 
     with app.app_context():
         db = get_db()
-        count = db.execute("SELECT COUNT(id) FROM post").fetchone()[0]
+        count = db.execute("SELECT COUNT(id) FROM task").fetchone()[0]
         assert count == 2
 
 
@@ -64,8 +69,8 @@ def test_update(client, auth, app):
 
     with app.app_context():
         db = get_db()
-        post = db.execute("SELECT * FROM post WHERE id = 1").fetchone()
-        assert post["title"] == "updated"
+        task = db.execute("SELECT * FROM task WHERE id = 1").fetchone()
+        assert task["title"] == "updated"
 
 
 #作成・更新チェック
@@ -73,7 +78,7 @@ def test_update(client, auth, app):
 def test_create_update_validate(client, auth, path):
     auth.login()
     response = client.post(path, data={"title": ""})
-    assert b"Title is required." in response.data
+    assert MESSAGE_TODO_UPDATE_TITLE_BLANK_CHK.encode('utf-8') in response.data
 
 
 #消去チェック
@@ -84,5 +89,5 @@ def test_delete(client, auth, app):
 
     with app.app_context():
         db = get_db()
-        post = db.execute("SELECT * FROM post WHERE id = 1").fetchone()
-        assert post is None
+        task = db.execute("SELECT * FROM task WHERE id = 1").fetchone()
+        assert task is None

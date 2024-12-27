@@ -3,6 +3,8 @@ import sqlite3
 import pytest
 from src.db import get_db
 
+from src.db import MESSAGE_DB_INIT
+
 #接続、接続解除テスト
 def test_get_close_db(app):
     with app.app_context():
@@ -23,7 +25,7 @@ def test_init_db_command(runner, monkeypatch):
     def fake_init_db():
         Recorder.called = True
 
-    monkeypatch.setattr("flaskr.db.init_db", fake_init_db)
+    monkeypatch.setattr("src.db.init_db", fake_init_db)
     result = runner.invoke(args=["init-db"])
-    assert "Initialized" in result.output
+    assert MESSAGE_DB_INIT in result.output
     assert Recorder.called

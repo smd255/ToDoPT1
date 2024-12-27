@@ -4,6 +4,13 @@ from flask import session
 
 from src.db import get_db
 
+from src.auth import (
+    MESSAGE_AUTH_USERNAME_BLANK_CHK,
+    MESSAGE_AUTH_PASSWORD_BLANK_CHK,
+    MESSAGE_AUTH_USERNAME_VALID_CHK,
+    MESSAGE_AUTH_PASSWORD_VALID_CHK,
+    MESSAGE_AUTH_USERNAME_REG_CHK
+)
 
 def test_register(client, app):
     #ページの表示チェック
@@ -25,9 +32,9 @@ def test_register(client, app):
 @pytest.mark.parametrize(
     ("username", "password", "message"),
     (
-        ("", "", b"Username is required."),
-        ("a", "", b"Password is required."),
-        ("test", "test", b"already registered"),
+        ("", "", MESSAGE_AUTH_USERNAME_BLANK_CHK.encode('utf-8')),
+        ("a", "", MESSAGE_AUTH_PASSWORD_BLANK_CHK.encode('utf-8')),
+        ("test", "test", MESSAGE_AUTH_USERNAME_REG_CHK.encode('utf-8')),
     ),
 )
 def test_register_validate_input(client, username, password, message):
@@ -55,7 +62,8 @@ def test_login(client, auth):
 #ユーザー名、パスワードの認証チェック
 @pytest.mark.parametrize(
     ("username", "password", "message"),
-    (("a", "test", b"Incorrect username."), ("test", "a", b"Incorrect password.")),
+    (("a", "test", MESSAGE_AUTH_USERNAME_VALID_CHK.encode('utf-8')), 
+     ("test", "a", MESSAGE_AUTH_PASSWORD_VALID_CHK.encode('utf-8'))),
 )
 def test_login_validate_input(auth, username, password, message):
     response = auth.login(username, password)

@@ -1,3 +1,7 @@
 /instance/
 __pycache__/
 /.vscode/
+/myenv/
+/.pytest_cache/
+/htmlcov/
+/.coverage

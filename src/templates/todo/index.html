@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Lists{% endblock %}</h1>
   {% if g.user %}
-    <a class="action" href="{{ url_for('todo.create') }}">New</a>
+    <h1>{% block title %}一覧{% endblock %}</h1>
+    <a class="action" href="{{ url_for('todo.create') }}">新規タスク</a>
   {% endif %}
 {% endblock %}
 
@@ -31,7 +31,7 @@
     {% endfor %}
   {% else %}
   {# ユーザー非ログイン時は登録・ログイン画面表示 #}
-    <li><a href="{{ url_for('auth.register') }}">Register</a>
-    <li><a href="{{ url_for('auth.login') }}">Log In</a>
+    <li><a href="{{ url_for('auth.register') }}">{{ register_text }}</a>
+    <li><a href="{{ url_for('auth.login') }}">{{ login_text }}</a>
   {% endif %}
 {% endblock %}

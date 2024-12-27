@@ -15,6 +15,12 @@ bp = Blueprint("todo", __name__)
 
 INDEX_CHECKBOX = "checkbox"   #index.htmlチェックボックスのname
 
+TEXT_TODO_INDEX_REGSTER = "ユーザー登録"
+TEXT_TODO_INDEX_LOGIN = "ログイン"
+
+MESSAGE_TODO_CREATE_TITLE_BLANK_CHK = "タイトルの入力が必要です"
+MESSAGE_TODO_UPDATE_TITLE_BLANK_CHK = "タイトルの入力が必要です"
+
 #メイン画面
 @bp.route("/")
 def index():
@@ -25,7 +31,9 @@ def index():
         " ORDER BY t.id DESC"
     ).fetchall()
     
-    return render_template("todo/index.html", tasks = tasks)
+    return render_template("todo/index.html", tasks = tasks, 
+                           register_text = TEXT_TODO_INDEX_REGSTER, 
+                           login_text = TEXT_TODO_INDEX_LOGIN)
 
 #メイン画面 状況更新ボタン
 @bp.route("/<int:id>/submit_form", methods= ("POST",))
@@ -49,8 +57,9 @@ def submit_form(id):
         " ORDER BY t.id DESC"
     ).fetchall()
 
-    return render_template('todo/index.html', tasks = tasks)
-
+    return render_template("todo/index.html", tasks = tasks, 
+                           register_text = TEXT_TODO_INDEX_REGSTER, 
+                           login_text = TEXT_TODO_INDEX_LOGIN)
 
 
 #タスク作成画面
@@ -63,7 +72,7 @@ def create():
 
         #タイトル空欄時の処理
         if not title:
-            error = "タイトルの入力が必要です"
+            error = MESSAGE_TODO_CREATE_TITLE_BLANK_CHK
 
         if error is not None:
             flash(error)
@@ -86,17 +95,15 @@ def update(id):
     task = _get_task(id)    #task取得
     if request.method == "POST":
         title = request.form["title"]
-        #TODO:タスク状況更新
         error = None
 
         #タイトル空欄時の処理
         if not title:
-            error = "タイトルの入力が必要です"
+            error = MESSAGE_TODO_UPDATE_TITLE_BLANK_CHK
 
         if error is not None:
             flash(error)
         else:
-            #TODO:タスク状況の更新
             db = get_db()
             db.execute(
                 "UPDATE task SET title = ? WHERE id = ?", (title, id)
@@ -109,7 +116,7 @@ def update(id):
 
 #タスクの消去
 @bp.route("/<int:id>/delete", methods=("POST",))
-#TODO:未ログイン時のログイン要求
+@login_required
 def delete(id):
     _get_task(id)   #戻り値の使用ではなく、エラーチェック用。関数分けるのもあり。
     db = get_db()
